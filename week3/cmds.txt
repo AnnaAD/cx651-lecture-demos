@@ -1,0 +1,4 @@
+valgrind --tool=cachegrind --cache-sim=yes ./sequential
+valgrind --tool=cachegrind --cache-sim=yes ./jump
+valgrind --tool=cachegrind --cache-sim=yes ./sequential-big
+valgrind --tool=cachegrind --cache-sim=yes ./jump-big

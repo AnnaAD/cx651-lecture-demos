@@ -1,0 +1,1 @@
+watch -d -n1 cat /proc/interrupts

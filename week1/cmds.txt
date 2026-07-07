@@ -1,0 +1,14 @@
+gcc hello.c -Wall -o myprogram
+gcc hello.c -E -Wall -o hello.i
+
+gcc hello.c math.c -Wall -o myprogram
+
+gcc hello.c -S -masm=intel -o hello.S
+gcc math.c -S -masm=intel -o hello.S
+
+as hello.S -o hello.o
+as math.S -o math.o
+
+ld hello.o math.o -o myprogram
+
+ld -o myprogram  -dynamic-linker /lib64/ld-linux-x86-64.so.2    /usr/lib/x86_64-linux-gnu/crt1.o    /usr/lib/x86_64-linux-gnu/crti.o   hello.o math.o    -lc    /usr/lib/x86_64-linux-gnu/crtn.o
