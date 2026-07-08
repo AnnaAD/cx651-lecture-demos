@@ -4,7 +4,7 @@ gcc hello.c -E -Wall -o hello.i
 gcc hello.c math.c -Wall -o myprogram
 
 gcc hello.c -S -masm=intel -o hello.S
-gcc math.c -S -masm=intel -o hello.S
+gcc math.c -S -masm=intel -o math.S
 
 as hello.S -o hello.o
 as math.S -o math.o

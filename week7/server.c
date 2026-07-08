@@ -1,76 +1,72 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 
 #define PORT 8080
-#define BUFFER_SIZE 1024
 #define MAX_POSTS 100
 #define MAX_MESSAGE_LEN 256
+#define BUFFER_SIZE 4096
 
 char message_board[MAX_POSTS][MAX_MESSAGE_LEN];
 int num_posts = 0;
 
-void add_post(const char *msg) {
-    if (num_posts >= MAX_POSTS)
-        return; // Board full
-
-    strncpy(message_board[num_posts], msg, MAX_MESSAGE_LEN - 1);
-    message_board[num_posts][MAX_MESSAGE_LEN - 1] = '\0';
-    num_posts++;
-}
-
-void send_board(int client) {
-    char buffer[BUFFER_SIZE * 4];
-    buffer[0] = '\0';
-
-    for (int i = 0; i < num_posts; i++) {
-        strcat(buffer, message_board[i]);
-        strcat(buffer, "\n");
-    }
-
-    send(client, buffer, strlen(buffer), 0);
-}
-
 int main() {
-    int server_fd, client_fd;
-    struct sockaddr_in addr;
+    int sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in server_addr, client_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
 
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(PORT);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
 
-    bind(server_fd, (struct sockaddr *)&addr, sizeof(addr));
-    listen(server_fd, 5);
+    bind(sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
-    printf("Server listening on port %d...\n", PORT);
+    printf("Message board server listening on port %d\n", PORT);
 
     while (1) {
-        client_fd = accept(server_fd, NULL, NULL);
+        char buffer[MAX_MESSAGE_LEN];
 
-        char buffer[BUFFER_SIZE];
+        socklen_t client_len = sizeof(client_addr);
 
-        int n = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
+        ssize_t bytes = recvfrom(sock_fd,
+                                 buffer,
+                                 sizeof(buffer) - 1,
+                                 0,
+                                 (struct sockaddr *)&client_addr,
+                                 &client_len);
 
-        if (n > 0) {
-            buffer[n] = '\0';
+        buffer[bytes] = '\0';
 
-            // Remove trailing newline
-            buffer[strcspn(buffer, "\r\n")] = '\0';
+        buffer[strcspn(buffer, "\r\n")] = '\0';
 
-            printf("Received: %s\n", buffer);
+        printf("Received: %s\n", buffer);
 
-            add_post(buffer);
-
-            send_board(client_fd);
+        if (num_posts < MAX_POSTS) {
+            strcpy(message_board[num_posts], buffer);
+            num_posts++;
         }
 
-        close(client_fd);
+        char reply[BUFFER_SIZE];
+        reply[0] = '\0';
+
+        for (int i = 0; i < num_posts; i++) {
+            strcat(reply, message_board[i]);
+            strcat(reply, "\n");
+        }
+
+        sendto(sock_fd,
+               reply,
+               strlen(reply),
+               0,
+               (struct sockaddr *)&client_addr,
+               client_len);
     }
 
-    close(server_fd);
+    close(sock_fd);
+
     return 0;
 }
