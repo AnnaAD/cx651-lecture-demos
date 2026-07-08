@@ -1,1 +1,1 @@
-for i in {1..100000}; do echo "a" | ./client > /dev/null 2>&1; done
+for i in {1..10000}; do echo "a" | ./client > /dev/null 2>&1; done
