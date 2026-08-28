@@ -1,3 +1,6 @@
 long long mystery(long long a) {
-  return (a + 2147483649)*12314452;
+  if (a > 300000) {
+    return 8000001*a;
+  }
+  return 20001*a;
 }
