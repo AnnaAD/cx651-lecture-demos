@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+struct node {
+  int x;
+  int y;
+  char *label;
+};
+
+#define PTS 10000
+
+int main(void) {
+  
+  struct node *A = malloc(sizeof(struct node) * PTS);
+
+  for(int  i = 0; i < PTS; i++) {
+    A[i].x = i;
+    A[i].y = i*i;
+    A[i].label = malloc(sizeof(char) * 4);
+    strcpy(A[i].label, "x^2");
+  }
+
+  free(A);
+
+  struct node *B = malloc(sizeof(struct node)*PTS);
+
+  for(int  i = 0; i < PTS; i++) {
+    B[i].x = i;
+    B[i].y = i*i*i;
+    B[i].label = malloc(sizeof(char) * 4);
+    strcpy(B[i].label, "x^3");
+  }
+
+  for(int i = 0; i < PTS; i++) {
+    if(A[i].y >= B[i].y) {
+      printf("x^2 >= x^3!!!: x=%d, x^2 = %d, x^3 = %d\n", i, A[i].y, B[i].y);
+    }
+  }
+
+  free(B);
+ 
+}

@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int z = 34;
+
+int main(void) {
+  int x = 3;
+  char a = 'a';
+  int *y = malloc(sizeof(int));
+  
+  
+  printf("address of x: %p\n", &x);
+  printf("address of a: %p\n", &a);
+  printf("y holds address: %p\n", y);
+  printf("address of z: %p\n", &z);
+  printf("address of printf (!?): %p\n", &main);
+  
+}
