@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int print_numbers(void) {
-  int* arr = malloc(sizeof(int)*100000);
+  int* arr = malloc(sizeof(int)*30);
 
   if(arr == NULL) {
     printf("Malloc FAILED\n");

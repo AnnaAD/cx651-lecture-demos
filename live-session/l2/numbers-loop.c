@@ -17,6 +17,7 @@ int print_numbers(void) {
     printf("%d ", *(arr + i));
   }
   printf("\n");
+
   return 0;
 }
 

@@ -1,0 +1,2 @@
+ulimit -d 6000000000
+ps -eo %cpu,pid,%mem,command -n
