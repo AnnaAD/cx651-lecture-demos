@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+void matrix_multiply(int *mat1, int *mat2, int *result, int rows1, int cols1, int rows2, int cols2) {
+    if (cols1 != rows2) {
+        fprintf(stderr, "Matrix dimensions do not allow multiplication.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Perform matrix multiplication
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols2; j++) {
+            for (int k = 0; k < cols2; k++) {
+                result[i * cols2 + j] += mat1[i * cols1 + k] * mat2[k * cols2 + j];
+            }
+        }
+    }
+}
+
+void read_matrix(const char *file_name, int *matrix, int rows, int cols) {
+    FILE *file = fopen(file_name, "rb");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    if (fread(matrix, sizeof(int), rows * cols, file) != rows * cols) {
+        fprintf(stderr, "Error reading matrix from file: %s\n", file_name);
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    fclose(file);
+}
+
+
+void print_matrix(int *matrix, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%d ", matrix[i * cols + j]);
+        }
+        printf("\n");
+    }
+}
+
+int main(int argc, char *argv[]) {
+
+    const char *matrix1_file = "matrix1.bin";
+    int rows1 = 500;
+    int cols1 = 500;
+
+    const char *matrix2_file = "matrix1.bin";
+    int rows2 = 500;
+    int cols2 = 500;
+
+    if (rows1 <= 0 || cols1 <= 0 || rows2 <= 0 || cols2 <= 0) {
+        fprintf(stderr, "Matrix dimensions must be positive integers.\n");
+        return EXIT_FAILURE;
+    }
+
+    // Allocate memory for matrices
+    int *matrix1 = malloc(rows1 * cols1 * sizeof(int));
+    int *matrix2 = malloc(rows2 * cols2 * sizeof(int));
+    int *result = calloc(rows1 * cols2 , sizeof(int));
+
+    if (!matrix1 || !matrix2 || !result) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        free(matrix1);
+        free(matrix2);
+        free(result);
+        return EXIT_FAILURE;
+    }
+
+    // Read matrices from files
+    read_matrix(matrix1_file, matrix1, rows1, cols1);
+    read_matrix(matrix2_file, matrix2, rows2, cols2);
+
+    // Perform multiplication
+    matrix_multiply(matrix1, matrix2, result, rows1, cols1, rows2, cols2);
+
+    // Print the resulting matrix
+    printf("Resultant Matrix: [print omitted]\n");
+    // print_matrix(result, rows1, cols2);
+
+    // Free allocated memory
+    free(matrix1);
+    free(matrix2);
+    free(result);
+
+    return EXIT_SUCCESS;
+}
