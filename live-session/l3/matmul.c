@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     int rows1 = 500;
     int cols1 = 500;
 
-    const char *matrix2_file = "matrix2.bin";
+    const char *matrix2_file = "matrix1.bin";
     int rows2 = 500;
     int cols2 = 500;
 
