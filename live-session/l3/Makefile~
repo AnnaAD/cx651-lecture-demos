@@ -1,0 +1,14 @@
+CC = gcc
+CFLAGS = -Wall -g
+
+all: matrix-ijk 
+
+%.o: %.c
+	gcc -o $@ -c $< -W -Wall -g
+
+matmul-ijk: matmul.c matrix-ijk.c
+	$(CC) $(CFLAGS) $^ -o $@
+
+clean:
+	rm -f *.o
+	rm -f matmul-ijk
