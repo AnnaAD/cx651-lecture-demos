@@ -12,8 +12,10 @@ for f in glob.glob("data/matmul-*.txt"):
         data[f.split("/")[-1][7:-4]] = float(m.group(1))
 
 plt.bar(data.keys(), data.values())
-plt.ylabel("D1 Cache Miss Rate (%)")
-plt.title("Matrix Multiplication Cache Miss Rate")
+plt.xticks(fontsize=24)
+plt.yticks(fontsize=24)
+plt.ylabel("D1 Cache Miss Rate (%)", fontsize=24)
+plt.title("Matrix Multiplication Cache Miss Rate",fontsize=24)
 plt.tight_layout()
 plt.savefig("data/miss-rate.png")
 plt.show()
