@@ -7,11 +7,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define X
 #define Y
+#define Z
 
 int main() {
-   char *large_array = malloc(X);
+   char *large_array = malloc(Y);
     
     if (large_array == NULL) {
         printf("Memory allocation failed!\n");
@@ -20,7 +20,7 @@ int main() {
     
     // Access memory constantly, random pages.
     for (int i = 0; i < 10000000; i++) {
-        int random_index = rand() % Y;
+        int random_index = rand() % Z;
         volatile int value = large_array[random_index]; // Read value from the random location 
         // (Do something with value)
 	    large_array[random_index] = random_index * 2;
