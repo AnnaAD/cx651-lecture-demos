@@ -1,0 +1,31 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+char output[64];
+int last_char;
+
+void *work(void *arg) {
+    long id = (long)arg;
+    char* word = "aaaaaaaaaa";
+    if(id == 0) {
+      word = "bbbbbbbbbb";
+    }
+    for(int i = 0; i < strlen(word)+1; i++ ) {
+      output[last_char] = word[i];
+      last_char += 1;
+      sleep(((float)(rand() % 1000)) / 1000.0);
+    }
+    return NULL;
+}
+
+int main(int argc, char **argv) {
+    int nt = 2;
+    pthread_t t[2];
+    for (long i = 0; i < nt; i++) pthread_create(&t[i], NULL, work, (void *)i);
+    for (int i = 0; i < nt; i++) {
+        pthread_join(t[i], NULL);
+    }
+    printf("got %s\n", output);
+}

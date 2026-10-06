@@ -9,6 +9,7 @@ long partial[64];
 void *work(void *arg) {
     int id = *(int *)arg;
     long s = 0;
+    printf("%d\n",id);
     for (long i = id; i < N; i += nt) s += i % 7;
     partial[id] = s;
     return NULL;
