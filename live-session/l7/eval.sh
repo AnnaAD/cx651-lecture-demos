@@ -1,0 +1,42 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+TRIALS=${TRIALS:-3}
+REQS=${REQS:-100}
+N=$(awk '/#define N /{print $3}' client-2.c)
+mkdir -p bin
+seq $((2 * N * N)) | awk '{print $1 % 10}' > bin/input.txt
+gcc -O2 -o bin/client client-2.c
+gcc -O2 -pthread -o bin/server_per_request server_per_request.c
+gcc -O2 -pthread -o bin/server_pool server_pool.c
+gcc -O2 -o bin/server fixed/server.c
+
+echo "server,clients,throughput" > results.csv
+
+for server in server_per_request server_pool server; do
+    ./bin/$server > /dev/null &
+    server_pid=$!
+    sleep 0.5
+
+    for n in $(seq 10 10 100); do
+        total=0
+        for t in $(seq $TRIALS); do
+            pids=()
+            start=$(date +%s.%N)
+            for i in $(seq $n); do
+                timeout 30 ./bin/client < bin/input.txt > /dev/null &
+                pids+=($!)
+            done
+            ok=0
+            for p in "${pids[@]}"; do wait $p && ok=$((ok + 1)); done
+            end=$(date +%s.%N)
+            total=$(awk "BEGIN{print $total + $ok * $REQS / ($end - $start)}")
+        done
+        tput=$(awk "BEGIN{printf \"%.1f\", $total / $TRIALS}")
+        echo "$server,$n,$tput" >> results.csv
+        echo "$server clients=$n throughput=$tput req/s"
+    done
+
+    kill $server_pid
+    wait $server_pid 2>/dev/null
+    sleep 0.5
+done

@@ -1,0 +1,20 @@
+import csv
+import sys
+from collections import defaultdict
+import matplotlib.pyplot as plt
+
+data = defaultdict(lambda: ([], []))
+with open(sys.argv[1] if len(sys.argv) > 1 else "results.csv") as f:
+    for row in csv.DictReader(f):
+        data[row["server"]][0].append(int(row["clients"]))
+        data[row["server"]][1].append(float(row["throughput"]))
+
+for server, (x, y) in data.items():
+    plt.plot(x, y, marker="o", label=server)
+
+plt.xlabel("Concurrent clients")
+plt.ylabel("Throughput (requests/s)")
+plt.title("UDP matrix server throughput")
+plt.legend()
+plt.grid(True)
+plt.savefig("throughput.png", dpi=150)

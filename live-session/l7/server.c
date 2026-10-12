@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+#define PORT 8080
+
+struct request {
+  int A;
+  int B;
+};
+
+struct response {
+  int C;
+};
+
+int main() {
+    int sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    struct sockaddr_in server_addr, client_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
+
+    bind(sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+
+    printf("Server listening on port %d\n", PORT);
+
+    while (1) {
+
+      struct request req;
+      socklen_t client_len = sizeof(client_addr);
+      
+      ssize_t bytes = recvfrom(sock_fd,
+			       &req,
+			       sizeof(req),
+			       0,
+			       (struct sockaddr *)&client_addr,
+			       &client_len);
+
+      
+      printf("Received: A:%d B:%d\n", req.A, req.B);
+
+
+      struct response res;
+      res.C = req.A*req.B;
+
+      sendto(sock_fd,
+	     &res,
+	     sizeof(res),
+	     0,
+	     (struct sockaddr *)&client_addr,
+	     client_len);
+    }
+
+    close(sock_fd);
+
+    return 0;
+}
